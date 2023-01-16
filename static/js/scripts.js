@@ -4,24 +4,35 @@ let fixtures = JSON.parse ('[{"namePlayer": "Juan", "hits": 300, "ab": 440}, {"n
 
 let players = fixtures;
 
-function showStrMayorsAvgCollective ( ){
-    strMayors = 'MAYORES AL PROMEDIO (' + avgCollective + ')\n\n Nombre   AVG\n\n';
-    for (let i = 0; i< players.length; i++){
-        let avg = getAvg (players[i].hits , players[i].ab);
+
+const $btnMayors =  document.getElementById('btnMayors');
+const $btnPlayers =  document.getElementById('btnPlayers');
+
+const $avgCollective= document.getElementById('avgCollective');
+
+const $players = document.getElementById('players');
+
+function showAvgCollective(){
+    $avgCollective.innerHTML =  avgCollective;
+}
+
+function showMayors ( ){
+    $players.innerHTML = null;
+    players.forEach(player => {
+        const avg = getAvg (player.hits , player.ab);
         if (isMayorAvgCollective (avg)){
-            strMayors += players[i].namePlayer + "  " + avg + "\n";
+            $players.innerHTML += `<tr>
+            <td>${ player.namePlayer }</td>
+            <td>${ getAvg (player.hits , player.ab) }</td>
+            </tr>
+            `
         }
-    }
-    alert (strMayors);
+    });
 }
 
 function isMayorAvgCollective (avg){
-    let sentinel = false;
     getAvgCollective ();
-    if (avg > avgCollective){
-        sentinel = true;
-    }
-    return sentinel;
+    return avg > avgCollective;
 }
 
 function addPlayer (){
@@ -33,12 +44,15 @@ function addPlayer (){
     alert ("¡Nuevo jugador agregado!");
 }
 
-function showPlayer (){
-    let strPlayers = 'JUGADORES \n\n Nombre   AVG\n\n'
-    for (let i = 0; i< players.length; i++){
-        strPlayers += players[i].namePlayer + "  " +  getAvg (players[i].hits , players[i].ab) + "\n";
-    }
-    alert (strPlayers);
+function showPlayers (){
+    $players.innerHTML =  null;
+    players.forEach(player => {
+        $players.innerHTML += `<tr>
+        <td>${ player.namePlayer }</td>
+        <td>${ getAvg (player.hits , player.ab) }</td>
+    </tr>
+    `
+    });
 }
 
 function getAvg (h, ab) {
@@ -49,15 +63,22 @@ function getAvg (h, ab) {
 
 function getAvgCollective () {
     avgCollective = 0;
-    let totalHits = 0;
-    let totalAb = 0;
-    for (let i = 0; i< players.length; i++){
-        totalHits += players[i].hits;
-        totalAb += players[i].ab;
-    }
+    const totalHits = players.reduce((accumulator, nextPlayer) => {
+        return accumulator + nextPlayer.hits;
+    }, 0);
+    const totalAb = players.reduce((accumulator, nextPlayer) => {
+        return accumulator + nextPlayer.ab;
+    }, 0);
     avgCollective = totalHits / totalAb;
     return avgCollective;
 }
+
+$btnMayors.addEventListener ('click', function(){ showMayors() }, false);
+
+$btnPlayers.addEventListener ('click', function(){ showPlayers() }, false);
+
+showAvgCollective();
+
 
 module.exports.isMayorAvgCollective = isMayorAvgCollective; 
 
